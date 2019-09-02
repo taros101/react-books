@@ -1,0 +1,13 @@
+.welcome-title {
+    text-align: center;
+}
+
+.home-container {
+  width: "100%";
+  margin: 0;
+}
+
+.home-search {
+    display: flex;
+    justify-content: center;
+}

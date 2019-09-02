@@ -1,0 +1,35 @@
+.nav-list {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .nav-list-link {
+    display: block;
+    padding: 22px 30px;
+    color: white;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: .3s;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  }
+  
+  .nav-list-link:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .ptofile-btn {
+    display: flex;
+    align-items: center;
+  }
+
+  .profile-link {
+    text-decoration: none;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .MuiBadge-badge {
+    margin: 8px;
+  }
