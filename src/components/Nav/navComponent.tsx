@@ -13,16 +13,19 @@ import RemoveIcon from '@material-ui/icons/Remove';
 import { Link } from "react-router-dom";
 import './navComponent.css'
 import { BookTypes, SortBookTypes } from '../../types/bookTypes'
+import LinearProgress from '@material-ui/core/LinearProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 export interface NavProps {
   auth: boolean;
   email: string;
-  password: string;
-  userType: string;
+  roles: string;
   img: string;
+  id: string;
   userBooks: BookTypes[];
   sortUserBooks: SortBookTypes[];
   totalPrice: number;
+  isBasketLoading: boolean;
   doLogout: () => void;
   addBookToCart: (o: object) => void; 
   removeBookFromCart: (o: object) => void;
@@ -63,22 +66,21 @@ export class NavComponent extends React.Component<NavProps, NavState>{
   handleAddBook(book: BookTypes) {
     const bookStore = this.props.userBooks
     const userBook = bookStore.find((item: BookTypes) => item.title === book.title);
-    this.props.addBookToCart({book: userBook, userEmail: this.props.email})
+    this.props.addBookToCart({book: userBook, email: this.props.email, img: this.props.img, userBooks: this.props.userBooks, id: this.props.id })
   }
 
   handleRemoveBook(book: BookTypes) {
     const bookStore = this.props.userBooks
     const userBook = bookStore.find((item: BookTypes) => item.title === book.title);
-    this.props.removeBookFromCart({book: userBook, userEmail: this.props.email})
+    this.props.removeBookFromCart({book: userBook, email: this.props.email, img: this.props.img, userBooks: this.props.userBooks, id: this.props.id })
   }
 
   logout() {
     localStorage.setItem('userAuth', JSON.stringify({
         "auth": false,
-        "email": "",
-        "password": "",
-        "userType": "",
-        "userBooks": ""
+        "roles": "",
+        "token": "",
+        "id": ""
     }));
     this.props.doLogout()
     this.setState({anchorEl: null})
@@ -109,7 +111,7 @@ export class NavComponent extends React.Component<NavProps, NavState>{
                         <Link className="nav-list-link" to="/">Home</Link>
                     </li>
                     {
-                    this.props.userType === "admin"
+                    this.props.roles === "admin"
                     ? <li className="nav-list-item">
                         <Link className="nav-list-link"to="/admin">Admin</Link>
                       </li>
@@ -168,11 +170,19 @@ export class NavComponent extends React.Component<NavProps, NavState>{
                               </MenuItem>
                               )
                             }
-                            <hr />  
+                            {this.props.isBasketLoading ? <LinearProgress /> : null }
+                            <hr style={{margin: 0}}/>  
                             <div style={{display: "flex", justifyContent: "space-between", padding: "10px 33px 10px 20px"}}><b>Общая цена: </b><b>{this.props.totalPrice}</b></div>
                           </div>
-                        : <div style={{padding: "10px 20px"}}>Корзина пуста</div>
-                          
+                        : <div style={{padding: "10px 20px"}}>
+                            {
+                              this.props.isBasketLoading 
+                              ? <div className="progress" style={{margin: 0}}>
+                                  <CircularProgress style={{width: "25px", height: "25px"}}/>
+                                </div>
+                              : "Корзина пуста" 
+                            }
+                          </div>
                       }
                     </Menu>
                     <Typography variant="h6" style={{marginRight: "10px"}}>

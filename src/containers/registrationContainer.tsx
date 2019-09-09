@@ -8,6 +8,7 @@ const mapStateToProps = (state: any) => ({
     secondPassword: state.registration.secondPassword,
     errors: state.registration.errors,
     snackbarOpen: state.registration.snackbarOpen,
+    isLoading: state.registration.isLoading
   });
   
   const mapDispatchToProps = {

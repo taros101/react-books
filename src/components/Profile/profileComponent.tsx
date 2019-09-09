@@ -1,14 +1,16 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import './profileComponent.css'
-import { SortBookTypes } from '../../types/bookTypes'
+import { BookTypes } from '../../types/bookTypes'
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 export interface ProfileProps {
   email: string;
   img: string;
-  sortUserBooks: SortBookTypes[];
-  totalPrice: number;
+  id: string;
+  userBooks: BookTypes[];
   profileChanges: (o: object) => void;
+  isChangeAvatarLoading: boolean;
 }
 
 export interface ProfileState {
@@ -24,9 +26,9 @@ export class ProfileComponent extends React.Component<ProfileProps, ProfileState
             img = e.target.result;
             this.props.profileChanges({
               imgChange: img, 
-              userEmail: this.props.email,
-              sortUserBooks: this.props.sortUserBooks,
-              totalPrice: this.props.totalPrice
+              email: this.props.email,
+              userBooks: this.props.userBooks,
+              id: this.props.id
             });
         };
     })(file).bind(this);
@@ -50,10 +52,12 @@ export class ProfileComponent extends React.Component<ProfileProps, ProfileState
             style={{display: "none"}}
             onChange={(event) => this.imageChange(event)}
           />
-          <label htmlFor="contained-button-file">
+          <label htmlFor="contained-button-file" style={{textAlign: "center"}}>
             <Button variant="contained" component="span" color="primary">
               Изменить аватар
             </Button>
+            <br/>
+            {this.props.isChangeAvatarLoading ? <CircularProgress style={{margin: "14px 0"}}/> : null}
           </label>
         </div>
       </div>

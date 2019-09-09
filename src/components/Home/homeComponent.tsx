@@ -4,17 +4,18 @@ import BookComponent  from '../../containers/bookContainer';
 import TextField from '@material-ui/core/TextField';
 import './homeComponent.css'
 import debounce from 'lodash/debounce'
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { BookTypes } from '../../types/bookTypes'
 
 export interface HomeProps {
   books: BookTypes[];
   booksStore: any;
+  searchBook: any;
 }
 
 export interface HomeState {
   searchBook: string;
   searchedBooksArray: BookTypes[];
-  searched: boolean;
 }
 
 export class HomeComponent extends React.Component<HomeProps, HomeState>{
@@ -23,31 +24,14 @@ export class HomeComponent extends React.Component<HomeProps, HomeState>{
 
     this.state = {
       searchBook: '',
-      searchedBooksArray: [],
-      searched: false
+      searchedBooksArray: []
     }
     this.props.booksStore()
   }
 
 
   searchBook = debounce(() => {
-    const books = this.props.books
-    const bookTitle = this.state.searchBook
-    let bookArr: BookTypes[] = []
-    
-    books.map((book: BookTypes) => {
-      if (book.title.toLowerCase().includes(bookTitle.toLowerCase())) {
-        bookArr.push(book)
-       }
-     }
-    )
-
-    this.setState({ searchedBooksArray: bookArr})
-    if (this.state.searchBook.length > 0) {
-      this.setState({ searched: true})
-    } else {
-      this.setState({ searched: false})
-    }
+    this.props.booksStore({searchBook: this.state.searchBook})
   }, 1000)
 
   handleChange(e: any) {
@@ -72,18 +56,19 @@ export class HomeComponent extends React.Component<HomeProps, HomeState>{
             />
           </Grid>
           {
-            this.state.searchedBooksArray.length > 0 ||  this.state.searched
-            ? this.state.searchedBooksArray.map((book: BookTypes) => 
-            <Grid item xs={12} sm={6} md={3} key={book.id}>
-              <BookComponent book={book}/>
-            </Grid>
-            )
-            :  books.map((book: BookTypes) => 
-              <Grid item xs={12} sm={6} md={3} key={book.id}>
-                <BookComponent book={book}/>
-              </Grid>
+            books.length > 0
+            ?  books.map((book: BookTypes) => 
+                <Grid item xs={12} sm={6} md={3} key={book._id}>
+                  <BookComponent book={book}/>
+                </Grid>
               )
+            : this.state.searchBook
+              ? <p style={{margin: "0 auto"}}>Ничего не найдено</p>
+              : <div className="progress" style={{width: "100%"}}>
+                  <CircularProgress />
+                </div>
           }
+          
         </Grid>
       </div>
     )

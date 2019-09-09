@@ -3,27 +3,29 @@ import { UserTypes } from './userTypes'
 
 export interface RegistrationTypes {
   email: string;
-  password: string;
   isLoading: boolean;
   errors: string;
-  userType: string;
   img: string;
   userBooks: BookTypes[];
   snackbarOpen: boolean;
+  password: string;
 }
 
 export interface LoginTypes {
     email: string;
-    password: string;
     isLoading: boolean;
     auth: boolean;
     errors: string;
-    userType: string;
+    roles: string;
     img: string;
+    id: '';
     snackbarOpen: boolean;
     userBooks: BookTypes[];
     sortUserBooks: SortBookTypes[];
     totalPrice: number;
+    isBasketLoading: boolean;
+    isChangeAvatarLoading: boolean;
+    isAuthLoading: boolean;
 }
 
 export interface BooksTypes {
@@ -35,6 +37,7 @@ export interface BooksTypes {
     books: BookTypes[];
     errors: string;
     snackbarOpen: boolean;
+    isBooksLoading: boolean;
 }
 
 export interface AdminTypes {
@@ -43,4 +46,5 @@ export interface AdminTypes {
     errors: string;
     snackbarOpen: boolean;
     addBookModal: boolean;
+    isAdminEditing: boolean;
 }

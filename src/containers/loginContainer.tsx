@@ -1,12 +1,15 @@
 import { LoginComponent } from "../components/Login/loginComponent"
 import { connect } from "react-redux";
 import { doLogin, snackbarClose } from "../redux/login/action";
+import { RootState } from '../redux/rootReducer'
 
-const mapStateToProps = (state: any) => ({
+const mapStateToProps = (state: RootState) => ({
     email: state.login.email,
-    password: state.login.password,
     errors: state.login.errors,
     snackbarOpen: state.login.snackbarOpen,
+    isLoading: state.login.isLoading,
+    regEmail: state.registration.email,
+    regPassword: state.registration.password,
 });
   
 const mapDispatchToProps = {

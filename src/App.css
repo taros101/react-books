@@ -13,3 +13,10 @@ form {
 .input {
   width: 100%;
 }
+
+.progress {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 60px;
+}

@@ -2,13 +2,12 @@ import { RegistrationTypes } from '../../types/reducerTypes'
 
 export const initialState: RegistrationTypes = {
     email: "",
-    password: "",
     isLoading: false,
     errors: "",
-    userType: "",
     img: "",
     userBooks: [],
-    snackbarOpen: false
+    snackbarOpen: false,
+    password: ''
   };
   
   export function registrationReducer(state: any = initialState, action: any) {
@@ -20,12 +19,12 @@ export const initialState: RegistrationTypes = {
       }
 
       case `REGISTRATION_SUCCESS`: {
-        const { email, password, img } = action.payload;
+        const { email, img, password } = action.payload;
           return {
           ...state,
           email,
-          password,
           img,
+          password,
           isLoading: false,
           userType: 'user',
           snackbarOpen: false

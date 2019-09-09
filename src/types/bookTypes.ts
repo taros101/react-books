@@ -4,7 +4,7 @@ export interface BookTypes {
     description: string;
     cover: string;
     price: string;
-    id: number;
+    _id: number;
 }
 
 export interface SortBookTypes {

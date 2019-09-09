@@ -1,11 +1,8 @@
 import { put, takeEvery, call } from "redux-saga/effects";
-import uniqBy from 'lodash/uniqBy'
-import { UserTypes } from '../../types/userTypes'
-import { BookTypes, SortBookTypes } from '../../types/bookTypes'
+import req  from '../../services/req'
+import sortBooks  from '../../services/sortBooks'
+import * as jwt from "jsonwebtoken";
 
-const url = "http://localhost:3000/users";
-
-// worker sagas
 export function* doLogin(): IterableIterator<any> {
   yield takeEvery(`DO_LOGIN`, function*(action: any) {
     try {
@@ -13,80 +10,73 @@ export function* doLogin(): IterableIterator<any> {
         data: { email, password, history }
       } = action;
 
-      const result = yield call(() => {
-        return fetch(url)
-                .then(res => res.json())
-        }
-      );
-
-      const auth = result.find((item: UserTypes) => item.email === email && item.password === password);
-
-      if (auth) {
-        const { userType, img, userBooks } = auth;
-
-        // Sort Books
-        const arr = userBooks.sort(function(a: BookTypes, b: BookTypes){
-          return a.title > b.title ? 1 : -1
-        })
-
-        const arr2 = uniqBy(arr, (o: BookTypes) => o.title)
-
-        let sortUserBooks: SortBookTypes[] = []
-
-        let totalPrice: number = 0;
-
-        for (let i = 0; i < arr2.length; i++) {
-          const title = arr2[i].title
-          const price = arr2[i].price
-          const booksCount = arr.reduce((count: number, book: BookTypes) => count + (book.title === arr2[i].title ? 1 : 0), 0)
-          const num = price.split(' ')
-          totalPrice += Number(num[0]) * booksCount
-          sortUserBooks.push({title, booksCount, price})
-        }
-
-        yield put({
-          type: `LOGIN_SUCCESS`,
-          payload: {
-            email,
-            password,
-            userType,
-            img,
-            userBooks,
-            sortUserBooks,
-            totalPrice
-          } 
-        })
-
-        localStorage.removeItem('userAuth');
-        localStorage.setItem('userAuth', JSON.stringify({
-          "email": email,
-          "password": password,
-          "auth": true,
-          "userType": userType,
-          "img": img,
-          "userBooks": userBooks,
-          "sortUserBooks": sortUserBooks,
-          "totalPrice": totalPrice
-        }));
-
-        return history.push('/');
-      } else if (email === '' || password === '') {
+      if (email === '' || password === '') {
         yield put({
           type: `LOGIN_ERROR`,
           payload: {
             errors: "Вы не ввели email или пароль"
           } 
         })
-      } else {
+      } else if (email.search(/^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/) < 0) {
         yield put({
           type: `LOGIN_ERROR`,
           payload: {
-            errors: "Не правильный email или пароль"
+            isLoading: false,
+            errors: 'Невалидный email'
           } 
+        });
+      } else {
+        const loginReq = yield call(req, 'authenticate', 'POST', '', '', {
+          "email": email, 
+          "password": password
         })
+
+        const token = loginReq.data
+
+        if (token) {
+          const decoded: any = jwt.decode(token);
+          const id = decoded.id
+          const roles = decoded.roles
+
+          localStorage.setItem('userAuth', JSON.stringify({
+            "auth": true,
+            "roles": roles,
+            "token": token,
+            "id": id
+          }));
+
+          const authGet = yield call(req, 'users', 'GET', id, token);
+
+          const user = authGet.data
+
+          const userBooks = user.userBooks
+          const sortBooksArr = sortBooks(userBooks)
+
+          yield put({
+            type: `LOGIN_SUCCESS`,
+            payload: {
+              email: user.email,
+              roles,
+              img: user.img,
+              userBooks: user.userBooks,
+              id,
+              sortUserBooks: sortBooksArr.sortUserBooks,
+              totalPrice: sortBooksArr.totalPrice
+            } 
+          })
+
+          return history.push('/');
+        } else {
+          yield put({
+            type: `LOGIN_ERROR`,
+            payload: {
+              errors: loginReq.message
+            } 
+          });
+        }
       }
-    } catch (error) {
-      console.log(error.message)
+    } 
+    catch (error) {
       yield put({
         type: `LOGIN_ERROR`,
         payload: {

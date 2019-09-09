@@ -1,9 +1,11 @@
 import { HomeComponent } from "../components/Home/homeComponent";
 import { connect } from "react-redux";
 import { booksStore } from "../redux/books/actions";
+import { RootState } from '../redux/rootReducer'
 
-const mapStateToProps = (state: any) => ({
-    books: state.books.books
+const mapStateToProps = (state: RootState) => ({
+    books: state.books.books,
+    isBooksLoading: state.books.isBooksLoading
 });
   
 const mapDispatchToProps = {

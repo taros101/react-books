@@ -15,6 +15,9 @@ import { BookTypes } from '../../types/bookTypes'
 export interface BookProps {
   userEmail: string;
   book: BookTypes;
+  img: string;
+  id: string;
+  userBooks: BookTypes[];
   addBookToCart: (o: object) => void;
 }
 
@@ -36,7 +39,7 @@ export class BookComponent extends React.Component<BookProps, BookState>{
   addBook(book: {}) {
     this.setState({ userBook: book })
 
-    this.props.addBookToCart({book: book, userEmail: this.props.userEmail})
+    this.props.addBookToCart({book: book, email: this.props.userEmail, img: this.props.img, userBooks: this.props.userBooks, id: this.props.id })
   }
 
   handleExpandClick() {

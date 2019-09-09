@@ -8,7 +8,8 @@ export const initialState: BooksTypes = {
     price: "",
     books: [],
     errors: '',
-    snackbarOpen: false
+    snackbarOpen: false,
+    isBooksLoading: false
   };
   
   export function booksReducer(state: BooksTypes = initialState, action: any) {
@@ -42,13 +43,26 @@ export const initialState: BooksTypes = {
         };
     }
 
+    case `BOOKS_LOADING_START`: {
+      return {
+        ...state,
+        isBooksLoading: true
+      };
+    }
+
+    case `BOOKS_LOADING_FINISH`: {
+      return {
+        ...state,
+        isBooksLoading: false
+      };
+    }
+
     case `SNACKBAR_CLOSE`: {
       return {
         ...state,
         snackbarOpen: false
       };
     }
-
 
     case `BOOKS_ERROR`: {
       const { errors } = action.payload;

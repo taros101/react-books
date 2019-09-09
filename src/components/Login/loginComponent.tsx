@@ -6,6 +6,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 export interface LoginProps {
     email: string;
@@ -15,6 +16,9 @@ export interface LoginProps {
     history: {};
     doLogin: (o: object) => void;
     snackbarClose: any;
+    isLoading: boolean;
+    regEmail: string;
+    regPassword: string;
 }
 
 export interface LoginState {
@@ -26,6 +30,11 @@ export class LoginComponent extends React.Component<LoginProps, LoginState>{
   state = {
     email: "",
     password: "",
+    isLoading: false
+   }
+
+   componentDidMount() {
+     this.setState({email: this.props.regEmail, password: this.props.regPassword})
    }
 
    handle = (event: any) =>
@@ -72,6 +81,7 @@ export class LoginComponent extends React.Component<LoginProps, LoginState>{
                     Логин
                   </Button>
               </form>
+              {this.props.isLoading ? <LinearProgress /> : null }
             </Paper>
             {
               this.props.snackbarOpen

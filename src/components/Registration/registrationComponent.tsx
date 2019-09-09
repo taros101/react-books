@@ -7,10 +7,12 @@ import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 export interface RegistrationProps {
   errors: string;
   snackbarOpen: boolean;
+  isLoading: boolean;
   history: any;
   doRegistration: (o: object) => void;
   snackbarClose: () => void;
@@ -27,6 +29,7 @@ export class RegistrationComponent extends React.Component<RegistrationProps, Re
     email: "",
     password: "",
     secondPassword: "",
+    isLoading: false
   }
 
    handle = (event: any) =>
@@ -84,6 +87,7 @@ export class RegistrationComponent extends React.Component<RegistrationProps, Re
                     Зарегистрироваться
                   </Button>
               </form>
+              {this.props.isLoading ? <LinearProgress /> : null }
             </Paper>
             {
               this.props.snackbarOpen

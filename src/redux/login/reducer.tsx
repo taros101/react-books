@@ -2,16 +2,19 @@ import { LoginTypes } from '../../types/reducerTypes'
 
 export const initialState: LoginTypes = {
   email: "",
-  password: "",
   isLoading: false,
   auth: false,
   errors: '',
-  userType: '',
+  roles: '',
   img: '',
+  id: '',
   snackbarOpen: false,
   userBooks: [],
   sortUserBooks: [],
-  totalPrice: 0
+  totalPrice: 0,
+  isBasketLoading: false,
+  isChangeAvatarLoading: false,
+  isAuthLoading: false
 };
 
 export function loginReducer(state: LoginTypes = initialState, action: any) {
@@ -25,16 +28,16 @@ export function loginReducer(state: LoginTypes = initialState, action: any) {
     }
 
     case `LOGIN_SUCCESS`: {
-      const { email, password, userType, img, userBooks, sortUserBooks, totalPrice } = action.payload;
+      const { email, roles, img, id, userBooks, sortUserBooks, totalPrice } = action.payload;
       return {
       ...state,
       email,
-      password,
-      userType,
+      roles,
       isLoading: false,
       auth: true,
       snackbarOpen: false,
       img,
+      id,
       userBooks,
       sortUserBooks,
       totalPrice
@@ -48,6 +51,7 @@ export function loginReducer(state: LoginTypes = initialState, action: any) {
       errors,
       isLoading: false,
       auth: false,
+      isAuthLoading: false,
       snackbarOpen: true
       };
    }
@@ -57,71 +61,90 @@ export function loginReducer(state: LoginTypes = initialState, action: any) {
       ...state,
       auth: false,
       email: '',
-      password: '',
-      userType: ''
+      password: ''
       };
   }
 
   case `DO_AUTH`: {
-    const { auth, email, password, userType, img, userBooks, sortUserBooks, totalPrice} = action.data;
+    return {
+    ...state,
+    isAuthLoading: true
+    };
+  }
+
+  case `DO_AUTH_SUCCESS`: {
+    const { auth, email, roles, id, img, userBooks, sortUserBooks, totalPrice } = action.data;
     return {
       ...state,
       auth,
       email,
-      password,
-      userType,
+      roles,
+      id,
       img,
       userBooks,
       sortUserBooks,
-      totalPrice
+      totalPrice,
+      isAuthLoading: false
+    };
+  }
+
+  case `DO_AUTH_FAILED`: {
+    return {
+    ...state,
+      auth: false,
+      isAuthLoading: false
     };
   }
 
   case `PROFILE_CHANGES`: {
     return {
-    ...state
+    ...state,
+    isChangeAvatarLoading: true
     };
   }
 
   case `USER_CHANGE_AVATAR`: {
-    const { email, password, userType, img, userBooks, sortUserBooks, totalPrice } = action.payload;
+    const { img } = action.payload;
     return {
     ...state,
-    email,
-    password,
-    userType,
     img,
-    userBooks,
-    sortUserBooks,
-    totalPrice
+    isChangeAvatarLoading: false
     };
+  }
+
+  case `USER_ADD_BOOK`: {
+    return {
+      ...state,
+      isBasketLoading: true
+    }
   }
 
   case `ADD_BOOK_TO_CART`: {
-    const { email, password, userType, img, userBooks, sortUserBooks, totalPrice } = action.payload;
+    const { userBooks, sortUserBooks, totalPrice } = action.payload;
     return {
     ...state,
-    email,
-    password,
-    userType,
-    img,
     userBooks,
     sortUserBooks,
-    totalPrice
+    totalPrice,
+    isBasketLoading: false
     };
   }
 
+  case `USER_REMOVE_BOOK`: {
+    return {
+      ...state,
+      isBasketLoading: true
+    }
+  }
+
   case `REMOVE_BOOK_FROM_CART`: {
-    const { email, password, userType, img, userBooks, sortUserBooks, totalPrice } = action.payload;
+    const { userBooks, sortUserBooks, totalPrice } = action.payload;
     return {
     ...state,
-    email,
-    password,
-    userType,
-    img,
     userBooks,
     sortUserBooks,
-    totalPrice
+    totalPrice,
+    isBasketLoading: false
     };
   }
 

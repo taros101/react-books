@@ -2,9 +2,8 @@ import { BookTypes } from './bookTypes'
 
 export interface UserTypes {
     email: string;
-    password: string;
-    userType: string;
+    roles: string;
     img: string;
     userBooks: BookTypes[];
-    id: number;
+    _id: number;
 }

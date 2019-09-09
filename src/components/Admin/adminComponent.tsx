@@ -19,8 +19,10 @@ import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import CloseIcon from '@material-ui/icons/Close';
 import TablePagination from '@material-ui/core/TablePagination';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { BookTypes } from '../../types/bookTypes'
 import { UserTypes } from '../../types/userTypes'
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 export interface AdminProps {
   usersBase: UserTypes[];
@@ -29,6 +31,7 @@ export interface AdminProps {
   errors: string;
   books: BookTypes[];
   addBookModal: boolean;
+  isAdminEditing: boolean;
   history: {};
   admin: any;
   booksStore: any;
@@ -37,11 +40,11 @@ export interface AdminProps {
   snackbarClose: () => void;
   addBookModalOpen: () => void;
   addBookModalClose: () => void;
+  adminsEdit: (o: object) => void;
 }
 
 export interface AdminState {
   email: string;
-  password: string;
   editId: number;
   bookTitle: string,
   bookAuthor: string;
@@ -60,7 +63,6 @@ export class AdminComponent extends React.Component<AdminProps, AdminState>{
 
     this.state = {
       email: '',
-      password: '',
       editId: 0,
       bookTitle: '',
       bookAuthor: '',
@@ -75,7 +77,9 @@ export class AdminComponent extends React.Component<AdminProps, AdminState>{
 
     this.handleChangeBooksPage = this.handleChangeBooksPage.bind(this);
     this.handleChangeUsersPage = this.handleChangeUsersPage.bind(this);
+  }
 
+  componentDidMount() {
     this.props.admin()
     this.props.booksStore()
   }
@@ -90,27 +94,26 @@ export class AdminComponent extends React.Component<AdminProps, AdminState>{
       }
     })
     
-    this.props.admin({usersDelete: users})
+    this.props.adminsEdit({usersDelete: users})
   }
 
-  handleEdit(email: string, password: string, id: number) {
+  handleEdit(email: string, id: number) {
     this.props.modalOpen();
-    this.setState({email: email, password: password, editId: id})
+    this.setState({email: email, editId: id})
   }
 
-  handleEditSave(email: string, password: string, id: number) {
+  handleEditSave(email: string, id: number) {
     const usersStore = this.props.usersBase
     let users:{} = {}
     
-    usersStore.forEach(function(user: {email: string, password: string, id: number}){
-      if (user.id === id) {
-        user.email = email
-        user.password = password
+    usersStore.forEach(function(user: {email: string, _id: number}){
+      if (user._id === id) {
+        user.email = email;
         users = user
       }
     })
 
-    this.props.admin({usersEdit: users})
+    this.props.adminsEdit({usersEdit: users})
     this.props.modalClose();
   }
 
@@ -193,108 +196,125 @@ export class AdminComponent extends React.Component<AdminProps, AdminState>{
         <Grid container spacing={2} style={{width: "100%", margin: "0 auto"}}>
           <Grid item xs={12} lg={6}>
             <Paper style={{margin: "0 20px", overflowX: "auto"}}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell align="center">ID</TableCell>
-                    <TableCell align="center">Пользователь</TableCell>
-                    <TableCell align="center">Пароль</TableCell>
-                    <TableCell align="center">Тип пользователя</TableCell>
-                    <TableCell align="right">Редактировать/Удалить</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {usersBase
-                  .slice(this.state.pageUser * this.state.rowsUserPerPage, this.state.pageUser * this.state.rowsUserPerPage + this.state.rowsUserPerPage)
-                  .map((user: UserTypes) => (
-                    <TableRow key={user.id}>
-                      <TableCell align="center">{user.id}</TableCell>
-                      <TableCell align="center" component="th" scope="row">
-                        {user.email}
-                      </TableCell>
-                      <TableCell align="center">{user.password}</TableCell>
-                      <TableCell align="center">{user.userType}</TableCell>
-                      <TableCell align="right">
-                        <IconButton onClick={() => this.handleEdit(user.email, user.password, user.id)} aria-label="delete">
-                          <CreateIcon />
-                        </IconButton>
-                        <IconButton onClick={() => this.handleDelete(user.email)} aria-label="delete">
-                          <DeleteIcon />
-                        </IconButton>
-                      </TableCell>
+            { usersBase.length > 0
+              ? 
+              <div>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center">#</TableCell>
+                      <TableCell align="center">Пользователь</TableCell>
+                      <TableCell align="right">Редактировать/Удалить</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              <TablePagination
-                  rowsPerPageOptions={[5, 10, 25]}
-                  component="div"
-                  count={usersBase.length}
-                  rowsPerPage={this.state.rowsUserPerPage}
-                  page={this.state.pageUser}
-                  backIconButtonProps={{
-                    'aria-label': 'previous page',
-                  }}
-                  nextIconButtonProps={{
-                    'aria-label': 'next page',
-                  }}
-                  onChangePage={this.handleChangeUsersPage}
-                  onChangeRowsPerPage={(event) => this.handleChangeRowsUsersPerPage(event)}
-                />
+                  </TableHead>
+                  <TableBody>
+                      {
+                        usersBase
+                        .slice(this.state.pageUser * this.state.rowsUserPerPage, this.state.pageUser * this.state.rowsUserPerPage + this.state.rowsUserPerPage)
+                        .map((user: UserTypes, index) => (
+                          <TableRow key={user._id}>
+                            <TableCell align="center">{index + 1}</TableCell>
+                            <TableCell align="center" component="th" scope="row">
+                              {user.email}
+                            </TableCell>
+                            <TableCell align="right">
+                              <IconButton onClick={() => this.handleEdit(user.email, user._id)} aria-label="delete">
+                                <CreateIcon />
+                              </IconButton>
+                              <IconButton onClick={() => this.handleDelete(user.email)} aria-label="delete">
+                                <DeleteIcon />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      }
+                  </TableBody>
+                </Table>
+                <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={usersBase.length}
+                    rowsPerPage={this.state.rowsUserPerPage}
+                    page={this.state.pageUser}
+                    backIconButtonProps={{
+                      'aria-label': 'previous page',
+                    }}
+                    nextIconButtonProps={{
+                      'aria-label': 'next page',
+                    }}
+                    onChangePage={this.handleChangeUsersPage}
+                    onChangeRowsPerPage={(event) => this.handleChangeRowsUsersPerPage(event)}
+                  />
+              </div>
+              : <div style={{display: "flex", justifyContent: "center", alignItems: "center", margin: "60px"}}>
+                  <CircularProgress />
+                </div>
+              }
+              { this.props.isAdminEditing ? <LinearProgress /> : null }
             </Paper>
           </Grid>
           <Grid item xs={12} lg={6}>
             <Paper style={{overflowX: "auto", margin: "0 20px"}}> 
-              <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell align="center">ID</TableCell>
-                      <TableCell align="center">Название книги</TableCell>
-                      <TableCell align="center">Автор</TableCell>
-                      <TableCell align="center">Краткое описание</TableCell>
-                      <TableCell align="center">Цена</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {booksStore
-                    .slice(this.state.pageBook * this.state.rowsBookPerPage, this.state.pageBook * this.state.rowsBookPerPage + this.state.rowsBookPerPage)
-                    .map((book: BookTypes) => (
-                      <TableRow key={book.id}>
-                        <TableCell align="center">{book.id}</TableCell>
-                        <TableCell align="center" component="th" scope="row">
-                          {book.title}
-                        </TableCell>
-                        <TableCell align="center">{book.author}</TableCell>
-                        <TableCell align="center">{book.description}</TableCell>
-                        <TableCell align="center">{book.price}</TableCell>
+              {
+                booksStore.length > 0
+                ? 
+                <div>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center">#</TableCell>
+                        <TableCell align="center">Название книги</TableCell>
+                        <TableCell align="center">Автор</TableCell>
+                        <TableCell align="center">Краткое описание</TableCell>
+                        <TableCell align="center">Цена</TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25]}
-                  component="div"
-                  count={booksStore.length}
-                  rowsPerPage={this.state.rowsBookPerPage}
-                  page={this.state.pageBook}
-                  backIconButtonProps={{
-                    'aria-label': 'previous page',
-                  }}
-                  nextIconButtonProps={{
-                    'aria-label': 'next page',
-                  }}
-                  onChangePage={this.handleChangeBooksPage}
-                  onChangeRowsPerPage={(event) => this.handleChangeRowsBooksPerPage(event)}
-                />
-              </Paper>
-              <div style={{display: "flex", justifyContent: "center"}}>
-                <Button style={{marginTop: "18px"}} variant="contained" color="primary" onClick={() => this.handleAddBookModalOpen()}>
-                  Добавить книгу
-                </Button>
-              </div>
-            </Grid>
-          </Grid> 
-
+                    </TableHead>
+                    <TableBody>
+                      {
+                        booksStore
+                        .slice(this.state.pageBook * this.state.rowsBookPerPage, this.state.pageBook * this.state.rowsBookPerPage + this.state.rowsBookPerPage)
+                        .map((book: BookTypes, index) => (
+                          <TableRow key={book._id}>
+                            <TableCell align="center">{index + 1}</TableCell>
+                            <TableCell align="center" component="th" scope="row">
+                              {book.title}
+                            </TableCell>
+                            <TableCell align="center">{book.author}</TableCell>
+                            <TableCell align="center">{book.description}</TableCell>
+                            <TableCell align="center">{book.price}</TableCell>
+                          </TableRow>
+                        ))
+                      }
+                    </TableBody>
+                  </Table>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={booksStore.length}
+                    rowsPerPage={this.state.rowsBookPerPage}
+                    page={this.state.pageBook}
+                    backIconButtonProps={{
+                      'aria-label': 'previous page',
+                    }}
+                    nextIconButtonProps={{
+                      'aria-label': 'next page',
+                    }}
+                    onChangePage={this.handleChangeBooksPage}
+                    onChangeRowsPerPage={(event) => this.handleChangeRowsBooksPerPage(event)}
+                  />
+                </div>
+                : <div className="progress">
+                    <CircularProgress />
+                  </div>
+              }
+            </Paper>
+            <div style={{display: "flex", justifyContent: "center"}}>
+              <Button style={{marginTop: "18px"}} variant="contained" color="primary" onClick={() => this.handleAddBookModalOpen()}>
+                Добавить книгу
+              </Button>
+            </div>
+          </Grid>
+        </Grid> 
         <Dialog open={this.props.modal} onClose={() => this.handleCloseModal()} aria-labelledby="form-dialog-title">
           <DialogTitle id="form-dialog-title">Редактировать</DialogTitle>
           <DialogContent>
@@ -307,19 +327,9 @@ export class AdminComponent extends React.Component<AdminProps, AdminState>{
               margin="normal"
               style={{width: "350px"}}
             />
-            <br/>
-            <TextField
-              id="standard-name"
-              label="Пароль"
-              name="password"
-              value={this.state.password}
-              onChange={this.handleUserChanges}
-              margin="normal"
-              style={{width: "350px"}}
-            />
           </DialogContent>
           <DialogActions style={{justifyContent: "center", padding: "20px 8px"}}>
-            <Button onClick={() => this.handleEditSave(this.state.email, this.state.password, this.state.editId)} variant="contained" color="primary">
+            <Button onClick={() => this.handleEditSave(this.state.email, this.state.editId)} variant="contained" color="primary">
               Сохранить
             </Button>
             <Button onClick={() => this.handleCloseModal()} color="primary" style={{marginLeft: "22px"}}>

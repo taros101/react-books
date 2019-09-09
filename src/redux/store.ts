@@ -7,10 +7,12 @@ import { doLogin,  } from "./login/sagasLogin";
 import { all } from "redux-saga/effects";
 import { doRegistration } from "./registration/sagasRegistration";
 import { admin } from "./admin/sagasAdmin";
+import { adminsEdit } from "./admin/sagasAdminsEdit";
 import { booksStore } from "./books/sagasBooks";
 import { profileChanges } from "./login/sagasProfile";
 import { addBookToCart } from "./login/sagasAddBook";
 import { removeBookFromCart } from "./login/sagasRemoveBook";
+import { doAuth } from "./login/sagasAuth";
 
 export default function configureStore(
   initialState?: RootState
@@ -32,7 +34,17 @@ export default function configureStore(
   }
 
   sagaMiddleware.run(function*() {
-    yield all([doLogin(), doRegistration(), admin(), booksStore(), profileChanges(), addBookToCart(), removeBookFromCart()]);
+    yield all([
+      doLogin(), 
+      doRegistration(), 
+      admin(), 
+      booksStore(), 
+      profileChanges(), 
+      addBookToCart(), 
+      removeBookFromCart(), 
+      adminsEdit(),
+      doAuth()
+    ]);
   });
 
   return store;

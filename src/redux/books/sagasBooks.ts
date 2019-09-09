@@ -1,49 +1,42 @@
 import { put, takeEvery, call } from "redux-saga/effects";
+import req  from '../../services/req'
 
-const url = "http://localhost:3000/books";
+const localStore = JSON.parse(localStorage.getItem('userAuth') || '{}')
 
-// worker sagas
 export function* booksStore(): IterableIterator<any> {
   yield takeEvery(`BOOKS_STORE`, function*(action: any) {
     try {
-      const books = yield call(() => {
-        return fetch(url)
-                .then(res => res.json())
-        }
-      );
-
       if (action.payload === undefined) {
+        const booksReq = yield call(req, 'books', 'GET', '', '')
+        const books = booksReq.data
+  
         yield put({
           type: `BOOKS_STORE_SUCCESS`,
           payload: {
               books
           } 
         })
-      } else if (action.payload.bookTitle 
-        && action.payload.bookAuthor 
-        && action.payload.bookDescription
-        && action.payload.bookPrice
-        && action.payload.bookCover) {
-        const bookTitle = action.payload.bookTitle
-        const bookAuthor = action.payload.bookAuthor
-        const bookDescription = action.payload.bookDescription
-        const bookPrice = action.payload.bookPrice
-        const bookCover = action.payload.bookCover
-        const history = action.payload.history
-        
-        yield call(fetch, url,{
-          method: "POST",
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
+      } else if (
+          action.payload.bookTitle 
+          && action.payload.bookAuthor 
+          && action.payload.bookDescription
+          && action.payload.bookPrice
+          && action.payload.bookCover
+          ) {
+          const bookTitle = action.payload.bookTitle
+          const bookAuthor = action.payload.bookAuthor
+          const bookDescription = action.payload.bookDescription
+          const bookPrice = action.payload.bookPrice
+          const bookCover = action.payload.bookCover
+          const history = action.payload.history
+
+          yield call(req, 'books/addBook', 'POST', '', localStore.token, {
             "title": bookTitle, 
             "author": bookAuthor, 
             "description": bookDescription, 
             "price": bookPrice,
             "cover": bookCover
           })
-        });
 
         yield put({
           type: `CREATE_BOOK`,
@@ -57,6 +50,17 @@ export function* booksStore(): IterableIterator<any> {
         });
 
         return history.push('/');
+      } else if (action.payload.searchBook || action.payload.searchBook === '') {
+        const searchedTitle = action.payload.searchBook
+        const booksReq = yield call(req, 'books', 'GET', searchedTitle, '')
+        const books = booksReq.data
+
+        yield put({
+          type: `BOOKS_STORE_SUCCESS`,
+          payload: {
+              books
+          } 
+        })
       } else {
         yield put({
           type: `BOOKS_ERROR`, 
@@ -65,7 +69,6 @@ export function* booksStore(): IterableIterator<any> {
           }
         })
       }
-
     } catch (error) {
       yield put({
         type: `BOOKS_ERROR`, 

@@ -1,24 +1,14 @@
 import { put, takeEvery, call } from "redux-saga/effects";
-import { UserTypes } from '../../types/userTypes'
 
-// worker sagas
 export function* doRegistration(): IterableIterator<any> {
   yield takeEvery(`DO_REGISTRATION`, function*(action: any) {
 
-    const url = "http://localhost:3000/users";
+    const url = "http://localhost:3000/v1/register";
    
     try {
       const {
         data: { email, password, secondPassword, history, img}
       } = action;
-
-      const result = yield call(() => {
-        return fetch(url)
-                .then(res => res.json())
-        }
-      );
-
-      const usersCheck = result.find((item: UserTypes) => item.email === email);
 
       if (email === '' || password === '' || secondPassword === '') {
         yield put({
@@ -35,42 +25,51 @@ export function* doRegistration(): IterableIterator<any> {
             errors: 'Пароли не совпадают'
           } 
         });
-      } else if (usersCheck) {
+      } else if (email.search(/^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/) < 0) {
         yield put({
           type: `REGISTRATION_ERRORS`,
           payload: {
             isLoading: false,
-            errors: 'Такой пользователь уже создан'
+            errors: 'Невалидный email'
           } 
         });
       } else {
-        yield call(fetch, url,{
-          method: "POST",
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            "email": email, 
-            "password": password, 
-            "userType": "user", 
-            "img": img,
-            "userBooks": []
-          })
-        });
+        const register = yield call(() => {
+          return fetch(url, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              "email": email, 
+              "password": password,
+              "img": img,
+              "userBooks": []
+            })
+          }).then(res => res.json())
+          }
+        );
 
-        yield put({
-          type: `REGISTRATION_SUCCESS`,
-          payload: {
-            email,
-            password,
-            userType: 'user',
-            img,
-            isLoading: false,
-            errors: false
-          } 
-        });
-
-        return history.push('/login');
+        if (register.success) {
+          yield put({
+            type: `REGISTRATION_SUCCESS`,
+            payload: {
+              email,
+              img,
+              password
+            } 
+          });
+  
+          return history.push('/login');
+        } else {
+          yield put({
+            type: `REGISTRATION_ERRORS`,
+            payload: {
+              isLoading: false,
+              errors: register.message
+            } 
+          });
+        }
       }
     } catch (error) {
       yield put({

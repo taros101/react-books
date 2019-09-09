@@ -1,4 +1,5 @@
-export const admin = (payload: object) => ({ type: "ADMIN", payload });
+export const admin = () => ({ type: "ADMIN" });
+export const adminsEdit = (payload: object) => ({ type: "ADMINS_EDIT", payload });
 export const modalOpen = () => ({ type: "MODAL_OPEN"});
 export const modalClose = () => ({ type: "MODAL_CLOSE"});
 
