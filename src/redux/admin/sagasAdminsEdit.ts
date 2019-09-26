@@ -32,7 +32,7 @@ export function* adminsEdit(): IterableIterator<any> {
         yield call(fetch, url + id, {
           method: "DELETE",
           headers: {
-              'authorization': `${localStore.token}`
+              'authorization': `Bearer ${localStore.token}`
           }
         });
         

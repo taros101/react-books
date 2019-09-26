@@ -7,8 +7,6 @@ export default function sortBooks(userBooks: any) {
         return a.title > b.title ? 1 : -1
       })
 
-      console.log(arr)
-
     const arr2 = uniqBy(arr, (o: BookTypes) => o.title)
 
     let sortUserBooks: SortBookTypes[] = []
