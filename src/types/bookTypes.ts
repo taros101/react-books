@@ -3,12 +3,12 @@ export interface BookTypes {
     author: string;
     description: string;
     cover: string;
-    price: string;
+    price: number;
     _id: number;
 }
 
 export interface SortBookTypes {
     title: string;
     booksCount: number;
-    price: string;
+    price: number;
 }

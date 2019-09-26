@@ -27,6 +27,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 export interface AdminProps {
   usersBase: UserTypes[];
   modal: boolean;
+  modalDelete: boolean;
   snackbarOpen: boolean;
   errors: string;
   books: BookTypes[];
@@ -37,6 +38,8 @@ export interface AdminProps {
   booksStore: any;
   modalClose: () => void;
   modalOpen: () => void;
+  modalOpenDelete: () => void;
+  modalCloseDelete: () => void;
   snackbarClose: () => void;
   addBookModalOpen: () => void;
   addBookModalClose: () => void;
@@ -85,6 +88,13 @@ export class AdminComponent extends React.Component<AdminProps, AdminState>{
   }
 
   handleDelete = (email: string) => {
+    console.log(111)
+    this.props.modalOpenDelete();
+    this.setState({email: email})
+  }
+
+  handleDeleteSave(email: string) {
+    console.log(email)
     const usersStore = this.props.usersBase
     let users:{} = {}
 
@@ -95,6 +105,7 @@ export class AdminComponent extends React.Component<AdminProps, AdminState>{
     })
     
     this.props.adminsEdit({usersDelete: users})
+    this.props.modalCloseDelete();
   }
 
   handleEdit(email: string, id: number) {
@@ -106,8 +117,8 @@ export class AdminComponent extends React.Component<AdminProps, AdminState>{
     const usersStore = this.props.usersBase
     let users:{} = {}
     
-    usersStore.forEach(function(user: {email: string, _id: number}){
-      if (user._id === id) {
+    usersStore.forEach(function(user: {email: string, id: number}){
+      if (user.id === id) {
         user.email = email;
         users = user
       }
@@ -119,6 +130,10 @@ export class AdminComponent extends React.Component<AdminProps, AdminState>{
 
   handleCloseModal() {
     this.props.modalClose();
+  }
+
+  handleCloseDeleteModal() {
+    this.props.modalCloseDelete();
   }
 
   handleAddBookModalOpen() {
@@ -197,12 +212,12 @@ export class AdminComponent extends React.Component<AdminProps, AdminState>{
           <Grid item xs={12} lg={6}>
             <Paper style={{margin: "0 20px", overflowX: "auto"}}>
             { usersBase.length > 0
-              ? 
+              ?  
               <div>
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell align="center">#</TableCell>
+                      <TableCell align="center">ID</TableCell>
                       <TableCell align="center">Пользователь</TableCell>
                       <TableCell align="right">Редактировать/Удалить</TableCell>
                     </TableRow>
@@ -212,13 +227,13 @@ export class AdminComponent extends React.Component<AdminProps, AdminState>{
                         usersBase
                         .slice(this.state.pageUser * this.state.rowsUserPerPage, this.state.pageUser * this.state.rowsUserPerPage + this.state.rowsUserPerPage)
                         .map((user: UserTypes, index) => (
-                          <TableRow key={user._id}>
-                            <TableCell align="center">{index + 1}</TableCell>
+                          <TableRow key={user.id}>
+                            <TableCell align="center">{user.id}</TableCell>
                             <TableCell align="center" component="th" scope="row">
                               {user.email}
                             </TableCell>
                             <TableCell align="right">
-                              <IconButton onClick={() => this.handleEdit(user.email, user._id)} aria-label="delete">
+                              <IconButton onClick={() => this.handleEdit(user.email, user.id)} aria-label="delete">
                                 <CreateIcon />
                               </IconButton>
                               <IconButton onClick={() => this.handleDelete(user.email)} aria-label="delete">
@@ -281,7 +296,7 @@ export class AdminComponent extends React.Component<AdminProps, AdminState>{
                             </TableCell>
                             <TableCell align="center">{book.author}</TableCell>
                             <TableCell align="center">{book.description}</TableCell>
-                            <TableCell align="center">{book.price}</TableCell>
+                            <TableCell align="center">{book.price} грн</TableCell>
                           </TableRow>
                         ))
                       }
@@ -337,7 +352,20 @@ export class AdminComponent extends React.Component<AdminProps, AdminState>{
             </Button>
           </DialogActions>
         </Dialog>
-
+        <Dialog open={this.props.modalDelete} onClose={() => this.handleCloseDeleteModal()} aria-labelledby="form-dialog-title">
+          <DialogTitle id="form-dialog-title">Удаление</DialogTitle>
+          <DialogContent>
+            Вы точно хотите удалить юзера?
+          </DialogContent>
+          <DialogActions style={{justifyContent: "center", padding: "20px 8px"}}>
+            <Button onClick={() => this.handleDeleteSave(this.state.email)} variant="contained" color="primary">
+              Да
+            </Button>
+            <Button onClick={() => this.handleCloseDeleteModal()} color="primary" style={{marginLeft: "22px"}}>
+              Нет
+            </Button>
+          </DialogActions>
+        </Dialog>
         <Dialog open={this.props.addBookModal} onClose={() => this.handleAddBookModalClose()} aria-labelledby="form-dialog-title">
           <DialogTitle id="form-dialog-title">Добавить книгу</DialogTitle>
           <DialogContent>

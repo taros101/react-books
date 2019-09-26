@@ -6,7 +6,7 @@ export interface RegistrationTypes {
   isLoading: boolean;
   errors: string;
   img: string;
-  userBooks: BookTypes[];
+  userBooks: {};
   snackbarOpen: boolean;
   password: string;
 }
@@ -20,7 +20,7 @@ export interface LoginTypes {
     img: string;
     id: '';
     snackbarOpen: boolean;
-    userBooks: BookTypes[];
+    userBooks: {};
     sortUserBooks: SortBookTypes[];
     totalPrice: number;
     isBasketLoading: boolean;
@@ -47,4 +47,5 @@ export interface AdminTypes {
     snackbarOpen: boolean;
     addBookModal: boolean;
     isAdminEditing: boolean;
+    modalDelete: boolean;
 }

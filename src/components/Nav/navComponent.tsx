@@ -22,7 +22,7 @@ export interface NavProps {
   roles: string;
   img: string;
   id: string;
-  userBooks: BookTypes[];
+  userBooks: any;
   sortUserBooks: SortBookTypes[];
   totalPrice: number;
   isBasketLoading: boolean;
@@ -64,13 +64,13 @@ export class NavComponent extends React.Component<NavProps, NavState>{
   }
 
   handleAddBook(book: BookTypes) {
-    const bookStore = this.props.userBooks
+    const bookStore = this.props.userBooks.books
     const userBook = bookStore.find((item: BookTypes) => item.title === book.title);
     this.props.addBookToCart({book: userBook, email: this.props.email, img: this.props.img, userBooks: this.props.userBooks, id: this.props.id })
   }
 
   handleRemoveBook(book: BookTypes) {
-    const bookStore = this.props.userBooks
+    const bookStore = this.props.userBooks.books
     const userBook = bookStore.find((item: BookTypes) => item.title === book.title);
     this.props.removeBookFromCart({book: userBook, email: this.props.email, img: this.props.img, userBooks: this.props.userBooks, id: this.props.id })
   }
@@ -120,7 +120,7 @@ export class NavComponent extends React.Component<NavProps, NavState>{
                 </ul>
                 <div className="ptofile-btn">
                     <Badge 
-                      badgeContent={this.props.userBooks.length > 0 ? this.props.userBooks.length : 0} 
+                      badgeContent={this.props.userBooks.books.length > 0 ? this.props.userBooks.books.length : 0} 
                       color="secondary" 
                       className="profile-badge"
                     >
@@ -172,7 +172,7 @@ export class NavComponent extends React.Component<NavProps, NavState>{
                             }
                             {this.props.isBasketLoading ? <LinearProgress /> : null }
                             <hr style={{margin: 0}}/>  
-                            <div style={{display: "flex", justifyContent: "space-between", padding: "10px 33px 10px 20px"}}><b>Общая цена: </b><b>{this.props.totalPrice}</b></div>
+                            <div style={{display: "flex", justifyContent: "space-between", padding: "10px 33px 10px 20px"}}><b>Общая цена: </b><b>{this.props.totalPrice} грн</b></div>
                           </div>
                         : <div style={{padding: "10px 20px"}}>
                             {

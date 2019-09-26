@@ -21,7 +21,7 @@ export function* doAuth(): IterableIterator<any> {
           roles: localStore.roles,
           id: localStore.id,
           img: user.data.img,
-          userBooks: user.data.userBooks,
+          userBooks: userBooks,
           sortUserBooks,
           totalPrice
           } 

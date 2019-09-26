@@ -6,10 +6,10 @@ export function* addBookToCart(): IterableIterator<any> {
   yield takeEvery(`USER_ADD_BOOK`, function*(action: any) {
     try {
       const data = action.payload
-
+      
       const addBook = data.book
       const userBooks = data.userBooks
-      userBooks.push(addBook)
+      userBooks.books.push(addBook)
 
       const sortBooksArr = sortBooks(userBooks)
 

@@ -26,8 +26,8 @@ export function* doLogin(): IterableIterator<any> {
           } 
         });
       } else {
-        const loginReq = yield call(req, 'authenticate', 'POST', '', '', {
-          "email": email, 
+        const loginReq = yield call(req, 'login', 'POST', '', '', {
+          "username": email, 
           "password": password
         })
 
@@ -49,7 +49,14 @@ export function* doLogin(): IterableIterator<any> {
 
           const user = authGet.data
 
+          // const userBooks = JSON.parse(user.userBooks)
+
           const userBooks = user.userBooks
+
+          console.log(userBooks)
+
+
+
           const sortBooksArr = sortBooks(userBooks)
 
           yield put({
@@ -58,7 +65,7 @@ export function* doLogin(): IterableIterator<any> {
               email: user.email,
               roles,
               img: user.img,
-              userBooks: user.userBooks,
+              userBooks,
               id,
               sortUserBooks: sortBooksArr.sortUserBooks,
               totalPrice: sortBooksArr.totalPrice
@@ -70,7 +77,7 @@ export function* doLogin(): IterableIterator<any> {
           yield put({
             type: `LOGIN_ERROR`,
             payload: {
-              errors: loginReq.message
+              errors: loginReq.error
             } 
           });
         }

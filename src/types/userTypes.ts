@@ -5,5 +5,5 @@ export interface UserTypes {
     roles: string;
     img: string;
     userBooks: BookTypes[];
-    _id: number;
+    id: number;
 }

@@ -6,7 +6,8 @@ export const initialState: AdminTypes = {
     errors: '',
     snackbarOpen: false,
     addBookModal: false,
-    isAdminEditing: false
+    isAdminEditing: false,
+    modalDelete: false
   };
   
   export function adminReducer(state: AdminTypes = initialState, action: any) {
@@ -63,6 +64,20 @@ export const initialState: AdminTypes = {
         return {
           ...state,
           modal: false
+        };
+      }
+
+      case `MODAL_OPEN_DELETE`: {
+        return {
+          ...state,
+          modalDelete: true
+        };
+      }
+
+      case `MODAL_CLOSE_DELETE`: {
+        return {
+          ...state,
+          modalDelete: false
         };
       }
 

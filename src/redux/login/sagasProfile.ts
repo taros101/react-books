@@ -6,7 +6,7 @@ export function* profileChanges(): IterableIterator<any> {
     try {
       const data = action.payload
 
-      yield call(req, 'users', 'PUT', data.id, '', {
+      yield call(req, 'users/changeProfile', 'PUT', data.id, '', {
         "email": data.email,
         "img": data.imgChange,
         "userBooks": data.userBooks

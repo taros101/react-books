@@ -9,7 +9,7 @@ export const initialState: LoginTypes = {
   img: '',
   id: '',
   snackbarOpen: false,
-  userBooks: [],
+  userBooks: {},
   sortUserBooks: [],
   totalPrice: 0,
   isBasketLoading: false,

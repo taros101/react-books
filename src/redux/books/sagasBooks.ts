@@ -8,12 +8,12 @@ export function* booksStore(): IterableIterator<any> {
     try {
       if (action.payload === undefined) {
         const booksReq = yield call(req, 'books', 'GET', '', '')
-        const books = booksReq.data
+
   
         yield put({
           type: `BOOKS_STORE_SUCCESS`,
           payload: {
-              books
+              books: booksReq
           } 
         })
       } else if (
@@ -52,8 +52,7 @@ export function* booksStore(): IterableIterator<any> {
         return history.push('/');
       } else if (action.payload.searchBook || action.payload.searchBook === '') {
         const searchedTitle = action.payload.searchBook
-        const booksReq = yield call(req, 'books', 'GET', searchedTitle, '')
-        const books = booksReq.data
+        const books = yield call(req, 'books', 'GET', searchedTitle, '')
 
         yield put({
           type: `BOOKS_STORE_SUCCESS`,

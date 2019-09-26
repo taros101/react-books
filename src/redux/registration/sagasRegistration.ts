@@ -3,7 +3,7 @@ import { put, takeEvery, call } from "redux-saga/effects";
 export function* doRegistration(): IterableIterator<any> {
   yield takeEvery(`DO_REGISTRATION`, function*(action: any) {
 
-    const url = "http://localhost:3000/v1/register";
+    const url = "http://localhost:3000/users/register";
    
     try {
       const {
@@ -44,11 +44,13 @@ export function* doRegistration(): IterableIterator<any> {
               "email": email, 
               "password": password,
               "img": img,
-              "userBooks": []
+              "userBooks": {"books": []}
             })
           }).then(res => res.json())
           }
         );
+
+        console.log(register)
 
         if (register.success) {
           yield put({

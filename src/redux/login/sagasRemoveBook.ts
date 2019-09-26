@@ -11,8 +11,8 @@ export function* removeBookFromCart(): IterableIterator<any> {
       const removeBook = data.book
       const userBooks = data.userBooks
 
-      const removeBookId = userBooks.findIndex((item: BookTypes) => item.title === removeBook.title);
-      userBooks.splice(removeBookId, 1)
+      const removeBookId = userBooks.books.findIndex((item: BookTypes) => item.title === removeBook.title);
+      userBooks.books.splice(removeBookId, 1)
 
       const sortBooksArr = sortBooks(userBooks)
 
@@ -29,7 +29,7 @@ export function* removeBookFromCart(): IterableIterator<any> {
           sortUserBooks: sortBooksArr.sortUserBooks,
           totalPrice: sortBooksArr.totalPrice
         } 
-      }) 
+      })  
     } catch (error) {
       yield put({
         type: `LOGIN_ERROR`,

@@ -1,14 +1,13 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import './profileComponent.css'
-import { BookTypes } from '../../types/bookTypes'
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 export interface ProfileProps {
   email: string;
   img: string;
   id: string;
-  userBooks: BookTypes[];
+  userBooks: {};
   profileChanges: (o: object) => void;
   isChangeAvatarLoading: boolean;
 }

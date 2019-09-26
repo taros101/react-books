@@ -5,7 +5,7 @@ export const initialState: RegistrationTypes = {
     isLoading: false,
     errors: "",
     img: "",
-    userBooks: [],
+    userBooks: {},
     snackbarOpen: false,
     password: ''
   };

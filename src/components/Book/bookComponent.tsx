@@ -72,7 +72,7 @@ export class BookComponent extends React.Component<BookProps, BookState>{
       <CardActions disableSpacing className="book-card-action">
         <div>
           <Button variant="contained" color="primary" onClick={() => this.addBook(this.props.book)}>
-            {this.props.book.price}
+            {this.props.book.price} грн
           </Button>
         </div>
         <IconButton
